@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://c64q6cm665wel"]
+[gd_scene load_steps=4 format=3 uid="uid://c64q6cm665wel"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_rgvee"]
+[ext_resource type="Script" path="res://AntCollectionList.cs" id="2_e6b47"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w3bim"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -10,6 +11,9 @@ border_width_right = 2
 border_width_bottom = 2
 
 [node name="Main" type="Node2D"]
+process_thread_group = 1
+process_thread_group_order = 0
+process_thread_messages = 0
 script = ExtResource("1_rgvee")
 
 [node name="AntCollectionList" type="ItemList" parent="."]
@@ -17,3 +21,4 @@ offset_right = 282.0
 offset_bottom = 62.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_w3bim")
 auto_height = true
+script = ExtResource("2_e6b47")
