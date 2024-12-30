@@ -9,7 +9,6 @@ using SmallEarthTech.AntRadioInterface;
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,12 +25,14 @@ public partial class Main : Node2D
     private AntCollection _antDevices;
     private AntCollectionList _antCollectionList;
 
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        Debug.WriteLine("Main._Ready()");
-        _antCollectionList = GetNode<AntCollectionList>("AntCollectionList");
+    private Label _ipAddress;
+    private Label _description;
+    private Label _serialNumber;
+    private Label _hostVersion;
 
+    public Main()
+    {
+        Debug.WriteLine("Main()");
         // create the host
         _host = Host.CreateDefaultBuilder(_options).
             UseAntPlus().   // add ANT libraries and hosting extensions to services
@@ -43,18 +44,36 @@ public partial class Main : Node2D
             }).
             Build();
 
+        // get the ANT radio service
+        _antRadioService = _host.Services.GetRequiredService<IAntRadio>() as AntRadioService;
+
+        // get the ANT device collection
+        _antDevices = _host.Services.GetRequiredService<AntCollection>();
+
         // get the logger
         _logger = _host.Services.GetRequiredService<ILogger<Main>>();
+    }
 
-        // search for an ANT radio server on the local network
-        _antRadioService = _host.Services.GetRequiredService<IAntRadio>() as AntRadioService;
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
+    {
+        // get the labels associated with the ANT radio server
+        _ipAddress = GetNode<Label>("%IPAddress");
+        _description = GetNode<Label>("%Description");
+        _serialNumber = GetNode<Label>("%SerialNumber");
+        _hostVersion = GetNode<Label>("%HostVersion");
+
+        // get the list of ANT devices
+        _antCollectionList = GetNode<AntCollectionList>("%AntCollectionList");
+
+        //// search for an ANT radio server on the local network
         _ = Task.Run(async () =>
         {
             try
             {
                 await _antRadioService.FindAntRadioServerAsync();
-                _logger.LogInformation("ANT Radio Server found.");
-                _antDevices = _host.Services.GetRequiredService<AntCollection>();
+                PopulateAntRadioServerInfo(_antRadioService);
+
                 _antDevices.CollectionChanged += AntDevices_CollectionChanged;
 
                 // IMPORTANT: Initiate scanning on a background thread.
@@ -79,13 +98,13 @@ public partial class Main : Node2D
             case NotifyCollectionChangedAction.Add:
                 foreach (AntDevice item in e.NewItems)
                 {
-                    _antCollectionList.AddDevice(item.ToString(), CreateDeviceTexture(item));
+                    _antCollectionList.AddDevice(item);
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
-                foreach (var item in e.OldItems)
+                foreach (AntDevice item in e.OldItems)
                 {
-                    _antCollectionList.RemoveDevice(item.ToString());
+                    _antCollectionList.RemoveDevice(item);
                 }
                 break;
             case NotifyCollectionChangedAction.Reset:
@@ -94,20 +113,17 @@ public partial class Main : Node2D
             case NotifyCollectionChangedAction.Replace:
                 foreach (AntDevice item in e.NewItems)
                 {
-                    _antCollectionList.UpdateDevice(item.ToString(), CreateDeviceTexture(item));
+                    _antCollectionList.UpdateDevice(item);
                 }
                 break;
         }
     }
 
-    private static Texture2D CreateDeviceTexture(AntDevice item)
+    private void PopulateAntRadioServerInfo(AntRadioService antRadio)
     {
-        using MemoryStream ms = new();
-        item.DeviceImageStream.CopyTo(ms);
-        ms.Position = 0;
-        Image image = new();
-        image.LoadPngFromBuffer(ms.ToArray());
-        image.Resize(64, 64);
-        return ImageTexture.CreateFromImage(image);
+        _ipAddress.SetDeferred("text", antRadio.ServerIPAddress.ToString());
+        _description.SetDeferred("text", antRadio.ProductDescription);
+        _serialNumber.SetDeferred("text", antRadio.SerialNumber.ToString());
+        _hostVersion.SetDeferred("text", antRadio.Version);
     }
 }

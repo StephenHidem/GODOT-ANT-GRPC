@@ -1,27 +1,17 @@
 using Godot;
+using SmallEarthTech.AntPlus;
 using System.Diagnostics;
+using System.IO;
 
 public partial class AntCollectionList : ItemList
 {
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        Debug.WriteLine("AntCollectionList._Ready()");
-        Name = "AntCollectionList";
-    }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-    }
-
-    public void AddDevice(string device, Texture2D texture)
+    public void AddDevice(AntDevice device)
     {
         Debug.WriteLine($"AntCollectionList.AddDevice({device})");
-        CallDeferred(ItemList.MethodName.AddItem, device, texture);
+        CallDeferred(ItemList.MethodName.AddItem, device.ToString(), CreateDeviceTexture(device));
     }
 
-    public void RemoveDevice(string device)
+    public void RemoveDevice(AntDevice device)
     {
         Debug.WriteLine($"AntCollectionList.RemoveDevice({device})");
         int index = FindItemIndex(device);
@@ -34,29 +24,40 @@ public partial class AntCollectionList : ItemList
     public void ClearDevices()
     {
         Debug.WriteLine("AntCollectionList.ClearDevices()");
-        Clear();
+        CallDeferred(ItemList.MethodName.Clear);
     }
 
-    public void UpdateDevice(string device, Texture2D texture)
+    public void UpdateDevice(AntDevice device)
     {
         Debug.WriteLine($"AntCollectionList.UpdateDevice({device})");
         int index = FindItemIndex(device);
         if (index >= 0)
         {
-            CallDeferred(ItemList.MethodName.SetItemText, index, device);
-            CallDeferred(ItemList.MethodName.SetItemIcon, index, texture);
+            CallDeferred(ItemList.MethodName.SetItemText, index, device.ToString());
+            CallDeferred(ItemList.MethodName.SetItemIcon, index, CreateDeviceTexture(device));
         }
     }
 
-    private int FindItemIndex(string device)
+    private int FindItemIndex(AntDevice device)
     {
         for (int i = 0; i < GetItemCount(); i++)
         {
-            if (GetItemText(i) == device)
+            if (GetItemText(i) == device.ToString())
             {
                 return i;
             }
         }
         return -1;
+    }
+
+    private static Texture2D CreateDeviceTexture(AntDevice item)
+    {
+        using MemoryStream ms = new();
+        item.DeviceImageStream.CopyTo(ms);
+        ms.Position = 0;
+        Image image = new();
+        image.LoadPngFromBuffer(ms.ToArray());
+        image.Resize(64, 64);
+        return ImageTexture.CreateFromImage(image);
     }
 }

@@ -1,7 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://c64q6cm665wel"]
+[gd_scene load_steps=5 format=3 uid="uid://c64q6cm665wel"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_rgvee"]
 [ext_resource type="Script" path="res://AntCollectionList.cs" id="2_e6b47"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_be3yr"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w3bim"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -16,9 +23,79 @@ process_thread_group_order = 0
 process_thread_messages = 0
 script = ExtResource("1_rgvee")
 
-[node name="AntCollectionList" type="ItemList" parent="."]
-offset_right = 282.0
-offset_bottom = 62.0
+[node name="AntRadioPanel" type="Panel" parent="."]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 318.0
+offset_bottom = 146.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_be3yr")
+
+[node name="AntRadioServerBox" type="VBoxContainer" parent="AntRadioPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 307.0
+offset_bottom = 135.0
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="AntRadioPanel/AntRadioServerBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "ANT Radio Server"
+
+[node name="AntRadioProperties" type="GridContainer" parent="AntRadioPanel/AntRadioServerBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+columns = 2
+
+[node name="Label" type="Label" parent="AntRadioPanel/AntRadioServerBox/AntRadioProperties"]
+layout_mode = 2
+text = "Description:"
+
+[node name="Description" type="Label" parent="AntRadioPanel/AntRadioServerBox/AntRadioProperties"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="AntRadioPanel/AntRadioServerBox/AntRadioProperties"]
+layout_mode = 2
+text = "IP Address:"
+
+[node name="IPAddress" type="Label" parent="AntRadioPanel/AntRadioServerBox/AntRadioProperties"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Connecting..."
+
+[node name="Label3" type="Label" parent="AntRadioPanel/AntRadioServerBox/AntRadioProperties"]
+layout_mode = 2
+text = "Serial Number:"
+
+[node name="SerialNumber" type="Label" parent="AntRadioPanel/AntRadioServerBox/AntRadioProperties"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label4" type="Label" parent="AntRadioPanel/AntRadioServerBox/AntRadioProperties"]
+layout_mode = 2
+text = "Host Version:"
+
+[node name="HostVersion" type="Label" parent="AntRadioPanel/AntRadioServerBox/AntRadioProperties"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="AntDevicesBox" type="VBoxContainer" parent="."]
+offset_left = 339.0
+offset_top = 4.0
+offset_right = 691.0
+offset_bottom = 35.0
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="AntDevicesBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "ANT Devices"
+
+[node name="AntCollectionList" type="ItemList" parent="AntDevicesBox"]
+unique_name_in_owner = true
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_w3bim")
 auto_height = true
 script = ExtResource("2_e6b47")
