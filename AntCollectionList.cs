@@ -1,19 +1,16 @@
 using Godot;
 using SmallEarthTech.AntPlus;
-using System.Diagnostics;
 using System.IO;
 
 public partial class AntCollectionList : ItemList
 {
     public void AddDevice(AntDevice device)
     {
-        Debug.WriteLine($"AntCollectionList.AddDevice({device})");
         CallDeferred(ItemList.MethodName.AddItem, device.ToString(), CreateDeviceTexture(device));
     }
 
     public void RemoveDevice(AntDevice device)
     {
-        Debug.WriteLine($"AntCollectionList.RemoveDevice({device})");
         int index = FindItemIndex(device);
         if (index >= 0)
         {
@@ -23,13 +20,11 @@ public partial class AntCollectionList : ItemList
 
     public void ClearDevices()
     {
-        Debug.WriteLine("AntCollectionList.ClearDevices()");
         CallDeferred(ItemList.MethodName.Clear);
     }
 
     public void UpdateDevice(AntDevice device)
     {
-        Debug.WriteLine($"AntCollectionList.UpdateDevice({device})");
         int index = FindItemIndex(device);
         if (index >= 0)
         {

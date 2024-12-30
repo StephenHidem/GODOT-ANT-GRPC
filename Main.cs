@@ -41,6 +41,9 @@ public partial class Main : Node2D
                 // add the ANT radio service and cancellation token to signal app termination
                 services.AddSingleton<IAntRadio, AntRadioService>();
                 services.AddSingleton(_cancellationTokenSource);
+
+                // add Godot services
+                services.AddGodotServices();
             }).
             Build();
 
@@ -50,7 +53,7 @@ public partial class Main : Node2D
         // get the ANT device collection
         _antDevices = _host.Services.GetRequiredService<AntCollection>();
 
-        // get the logger
+        // get the _logger
         _logger = _host.Services.GetRequiredService<ILogger<Main>>();
     }
 

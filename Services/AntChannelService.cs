@@ -14,23 +14,23 @@ namespace GodotAntGrpc.Services
     internal partial class AntChannelService : IAntChannel
     {
         private readonly gRPCAntChannel.gRPCAntChannelClient _client;
-        private readonly ILogger logger;
-        private readonly byte channelNumber;
+        private readonly ILogger _logger;
+        private readonly byte _channelNumber;
 
         public AntChannelService(ILogger logger, byte channelNumber, GrpcChannel grpcChannel)
         {
-            this.logger = logger;
-            this.channelNumber = channelNumber;
+            _logger = logger;
+            _channelNumber = channelNumber;
             _client = new(grpcChannel);
         }
 
-        public byte ChannelNumber => channelNumber;
+        public byte ChannelNumber => _channelNumber;
 
         public event EventHandler<AntResponse> ChannelResponse;
 
         public async void HandleChannelResponseEvents(CancellationToken cancellationToken)
         {
-            using AsyncServerStreamingCall<ChannelResponseUpdate> _response = _client.Subscribe(new SubscribeRequest { ChannelNumber = channelNumber }, cancellationToken: cancellationToken);
+            using AsyncServerStreamingCall<ChannelResponseUpdate> _response = _client.Subscribe(new SubscribeRequest { ChannelNumber = _channelNumber }, cancellationToken: cancellationToken);
             try
             {
                 await foreach (ChannelResponseUpdate update in _response.ResponseStream.ReadAllAsync(cancellationToken))
@@ -40,11 +40,11 @@ namespace GodotAntGrpc.Services
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
             {
-                logger.LogInformation("RpcException: operation cancelled");
+                _logger.LogInformation("RpcException: operation cancelled");
             }
             catch (OperationCanceledException)
             {
-                logger.LogInformation("OperationCanceledException");
+                _logger.LogInformation("OperationCanceledException");
             }
         }
 
@@ -70,7 +70,7 @@ namespace GodotAntGrpc.Services
 
         public void Dispose()
         {
-            logger.LogInformation("Disposing _response");
+            _logger.LogInformation("Disposing _response");
         }
 
         public bool IncludeExcludeListAddChannel(ChannelId channelId, byte listIndex, uint responseWaitTime)
@@ -127,7 +127,7 @@ namespace GodotAntGrpc.Services
         {
             var reply = _client.SendExtAcknowledgedData(new ExtDataRequest
             {
-                ChannelNumber = channelNumber,
+                ChannelNumber = _channelNumber,
                 ChannelId = channelId.Id,
                 Data = ByteString.CopyFrom(data),
                 WaitTime = ackWaitTime
@@ -139,7 +139,7 @@ namespace GodotAntGrpc.Services
         {
             var reply = await _client.SendExtAcknowledgedDataAsync(new ExtDataRequest
             {
-                ChannelNumber = channelNumber,
+                ChannelNumber = _channelNumber,
                 ChannelId = channelId.Id,
                 Data = ByteString.CopyFrom(data),
                 WaitTime = ackWaitTime
