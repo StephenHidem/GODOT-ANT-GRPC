@@ -21,7 +21,6 @@ project/assembly_name="Godot ANT gRPC"
 
 [editor]
 
-run/main_run_args="--Logging:LogLevel:Default=Debug"
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
 

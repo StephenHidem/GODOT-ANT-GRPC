@@ -8,14 +8,13 @@ using SmallEarthTech.AntPlus.Extensions.Hosting;
 using SmallEarthTech.AntRadioInterface;
 using System;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
 public partial class Main : Node2D
 {
     private readonly string[] _options = {
-        "--Logging:LogLevel:Default=Debug",
+        "--Logging:LogLevel:Default=Information",
         "--TimeoutOptions:MissedMessages=10"
     };
     private IHost _host;
@@ -32,7 +31,6 @@ public partial class Main : Node2D
 
     public Main()
     {
-        Debug.WriteLine("Main()");
         // create the host
         _host = Host.CreateDefaultBuilder(_options).
             UseAntPlus().   // add ANT libraries and hosting extensions to services
