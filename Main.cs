@@ -67,7 +67,7 @@ public partial class Main : Node2D
         // get the list of ANT devices
         _antCollectionList = GetNode<AntCollectionList>("%AntCollectionList");
 
-        //// search for an ANT radio server on the local network
+        // search for an ANT radio server on the local network
         _ = Task.Run(async () =>
         {
             try
